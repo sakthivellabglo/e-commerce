@@ -1,0 +1,26 @@
+{% extends "search.html" %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+<center>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+</center>
+{% for i in object_list %}
+<center>
+    <h2> {{ i.title }} </h2>
+    <img src="{{ i.image.url }}" , width=150px><br>
+    Brand :{{ i.brand }}<br>
+    price :{{ i.price }} <br>
+    stock: {{ i.stock }}<br>
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'add_to_cart' i.id %}">[Add to Cart]</a><br>
+    {% endif %}
+    {% endfor %}
+    <a href="/all/"> back to home</a>
+</center>
+{% endblock %}

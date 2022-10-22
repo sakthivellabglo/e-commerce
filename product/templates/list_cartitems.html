@@ -1,0 +1,37 @@
+{% extends 'search.html' %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+<center>
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+</center>
+<center>
+  {% for i in object_list %}
+  <div>
+    <center>
+      <br>
+      <img src="{{ i.product.image.url }}" , width=150px><br>
+      Brand : {{ i.product.brand }}<br>
+      price: {{ i.price }}<br>
+      stock: {{ i.product.stock }}<br>
+      ordered_date : {{i.date}}<br>
+      <form method="get" action="{% url 'add_quntity' i.product.id %}">
+        Quantity<input type="number" / name="quantity" value="{{i.quantity}}"><button value="+"
+          type="submit">Add</button>
+
+      </form>
+      <a href="{% url 'cart_remove' i.id %}"><button>remove</button></a><br>
+
+ 
+    </center>
+  </div>
+  {% endfor %}
+  <br>
+  total_price : {{ total_price }}
+</center>
+{% endblock content %}

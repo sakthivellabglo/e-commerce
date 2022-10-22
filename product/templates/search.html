@@ -1,0 +1,17 @@
+<center>
+    <h1> SAKTHI MOBILES</h1>
+    <form action="{% url 'search_results' %}" method="get">
+        <input name="product_name" type="text" placeholder="product name...">
+        <button type="submit">search</button>
+    </form>
+</center>
+<a href="{% url 'cart' %}"><img src="/images/images.png" style="width: 20px; margin-left: 1150px;"></a>
+{% if user.is_authenticated %}
+<p style="margin-left: 1100px;position:absolute; margin-top: -18px;"><a href="{% url 'logout' %}"> Logout</a>
+<p></p>
+{% else %}
+<p style="margin-left: 1100px;position:absolute; margin-top: -18px;"><a href="{% url 'login' %}"> login</a>
+<p>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
