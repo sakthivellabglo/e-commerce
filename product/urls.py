@@ -8,4 +8,9 @@ urlpatterns = [ path('all/',views.Allproducts.as_view(),name='all'),
                  path("cart/",login_required(views.ListCartItem.as_view()),name='cart'),
                  path("add_to_card/<int:id>",views.Add_to_add,name="add_to_cart"),
                  path("add_quntity/<int:id>",views.add_quntity,name="add_quntity"),
-                 path('remove/<int:id>/', views.cart_remove, name='cart_remove')]
+                 path('remove/<int:id>/', views.cart_remove, name='cart_remove'),
+                 path("add_to_order/<int:id>",views.add_order,name="add_to_order"),
+                 path("order",views.Orderproducts.as_view(),name='order'),
+                 path("placeorder",views.order_place,name = 'order_place' )
+        
+]
