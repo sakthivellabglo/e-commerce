@@ -1,11 +1,11 @@
+from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django .contrib import messages
-from product.models import Cart, Product
+from product.models import Cart, Order, Product
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render,HttpResponse,redirect
-from django.db.models import Sum
+from django.shortcuts import redirect
+from django.db.models import Sum , F
 
 class Allproducts(ListView):
      model = Product
@@ -52,6 +52,36 @@ def add_quntity(request,id):
     cart.save()
     return redirect("cart")
 
+def add_order(request,id):
+    cart =  Cart.objects.get(id=id)
+    order = Order.objects.get_or_create(
+        items= cart,
+        user = request.user,
+        total_product_cost = cart.price ,
+        tax =12,
+    )
+    return redirect("order")
+class Orderproducts(ListView):
+     model = Order
+     template_name = "order.html"
+     
+     def get_queryset(self): 
+        object_list =Order.objects.filter(user = self.request.user)
+        if object_list.exists() :
+            pass
+        else:
+           messages.error(self.request, ' nothing to order  ')
+        print(object_list)
+        return object_list
+    
+     def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['sub_total'] = Order.objects.filter(user = self.request.user).aggregate(Sum('total_product_cost'))['total_product_cost__sum']
+        context['tax'] = Order.objects.filter(user = self.request.user).aggregate(total = Sum(F('total_product_cost')* F('tax')/100))['total'] 
+        context['total_price'] = context['sub_total'] + context['tax']
+        return context
+
+
  
 class ListCartItem(ListView):
     model = Cart
@@ -71,3 +101,5 @@ class ListCartItem(ListView):
         '''Add context to total price'''
         context['total_price'] = self.get_queryset().aggregate(Sum('price'))['price__sum'] 
         return context
+def order_place(request):
+    return HttpResponse("your order is placed")

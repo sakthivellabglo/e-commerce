@@ -19,4 +19,14 @@ class Cart(models.Model):
 	quantity = models.IntegerField(default=1)
 	price = models.FloatField(blank=True)
 	date = models.DateField(auto_now_add = True)
+	def __str__(self):
+		return " {} {} {} {} {} ".format(self.user,self.product,self.quantity,self.price,self.date)
 
+class Order(models.Model) :
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    items = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    tax = models.FloatField()
+    total_product_cost = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.user.username
