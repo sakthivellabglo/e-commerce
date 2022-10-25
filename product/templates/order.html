@@ -1,24 +1,31 @@
 {% extends "search.html" %}
 
 {% block content %}
-{% for i in object_list %}
+{% for j in object_list %}
+
 <div>
+
         <center>
-                <h2> {{ i.items.product.title }}</h2>
-                <img src="{{ i.items.product.image.url }}" , width=150px><br>
-                price :{{i.items.price}}<br>
-                quntity : {{i.items.quantity}}<br>
-                tax  : {{i.tax}}%
+                {% for i in j.items.all%}
+                <center>
+                        <h2> {{ i.product.title }}</h2>
+                        <img src="{{ i.product.image.url }}" , width=150px><br>
+                        price :{{i.price}}<br>
+                        quntity : {{i.quantity}}<br>
+                        tax : {{j.tax}}% <br>
+                        <a href="{% url 'order_remove' j.id %}"><button>remove</button></a><br>
+                </center>
         </center>
 </div>
 {% endfor %}
+{% endfor %}
 <br>
 <center>
-<h4>sub total : {{sub_total}}</h4>
-<h4>tax charges : {{tax|floatformat:2}}  </h4>
-<h4>total_price: {{total_price}} </h4>
-<br>
-<a href="{% url 'order_place' %}"><button >place order</button></a>
+        <h4>sub total( {{i.quantity}}) : {{sub_total}}</h4>
+        <h4>tax charges : {{tax|floatformat:2}} </h4>
+        <h4>total_price: {{total_price}} </h4>
+        <br>
+        <a href="{% url 'order_place' %}"><button>place order</button></a>
 </center>
 
 {% endblock %}
