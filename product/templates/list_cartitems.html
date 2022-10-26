@@ -4,7 +4,7 @@
 {% if messages %}
 {% for message in messages %}
 <center>
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <div >
     {{ message }}
   </div>
   {% endfor %}
@@ -19,7 +19,7 @@
 
       <img src="{{ i.product.image.url }}" , width=150px><br>
       Brand : {{ i.product.brand }}<br>
-      price: {{ i.price }}<br>
+      price:Rs {{ i.price }}<br>
       stock: {{ i.product.stock }}<br>
       ordered_date : {{i.date}}<br>
       <form method="get" action="{% url 'add_quntity' i.product.id %}">
