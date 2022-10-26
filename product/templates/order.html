@@ -10,10 +10,11 @@
                 <center>
                         <h2> {{ i.product.title }}</h2>
                         <img src="{{ i.product.image.url }}" , width=150px><br>
-                        price :{{i.price}}<br>
+                        price :Rs {{i.price}}<br>
                         quntity : {{i.quantity}}<br>
                         tax : {{j.tax}}% <br>
                         order_status : {{j.order_status}}<br>
+                        <a href="{% url 'order_remove' i.id %}"><button>remove</button></a><br>
                 </center>
         </center>
 </div>
@@ -21,9 +22,9 @@
 {% endfor %}
 <br>
 <center>
-        <h4>sub total : {{sub_total}}</h4>
+        <h4>sub total :Rs  {{sub_total}}</h4>
         <h4>tax charges : {{tax|floatformat:2}} </h4>
-        <h4>total_price: {{total_price}} </h4>
+        <h4>total_price:Rs  {{total_price}} </h4>
         <br>
         <a href="{% url 'order_place' %}"><button>place order</button></a>
 </center>
