@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+Order_choices = [
+        ('pending', 'pending'),
+        ('sucess', 'sucess'),
+        ('failed', 'failed'),
+]
 
 class Product(models.Model):
 	title = models.CharField(max_length = 40)
@@ -14,7 +19,7 @@ class Product(models.Model):
 class Cart(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	product = models.ForeignKey(Product, on_delete=models.CASCADE)
-	quantity = models.IntegerField(default=1)
+	quantity = models.IntegerField(default=0)
 	price = models.FloatField(blank=True)
 	date = models.DateField(auto_now_add = True)
 	is_active = models.BooleanField(default=True)
@@ -26,7 +31,11 @@ class Order(models.Model) :
     items = models.ManyToManyField(Cart)
     tax = models.FloatField(null=True)
     total_product_cost = models.PositiveIntegerField(null=True)
+    order_status =  models.CharField(
+        max_length=15,
+        choices=Order_choices,
+        default= 'pending'
     
-
+	)
     def __str__(self):
         return self.user.username
