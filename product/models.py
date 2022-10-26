@@ -24,8 +24,8 @@ class Cart(models.Model):
 class Order(models.Model) :
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(Cart)
-    tax = models.FloatField()
-    total_product_cost = models.PositiveIntegerField()
+    tax = models.FloatField(null=True)
+    total_product_cost = models.PositiveIntegerField(null=True)
     
 
     def __str__(self):
