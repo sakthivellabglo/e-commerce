@@ -1,11 +1,10 @@
-from venv import create
 from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django .contrib import messages
-from product.models import Cart, Order, Product
+from product.models import Cart, Order, Product, Wishlist
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import redirect,render
 from django.db.models import Sum, F
 
 
@@ -64,10 +63,11 @@ def add_quntity(request, id):
 @login_required
 def add_order(request):
     cart = Cart.objects.filter(user=request.user)
-    total = Cart.objects.filter(Q(user=request.user)).aggregate(
+    total = Cart.objects.filter(Q(user=request.user) & Q(is_active=False)).aggregate(
         price__sum=Sum(F('price') * F('quantity')))['price__sum']
     cart.update(is_active=False)
-    order, orders = Order.objects.get_or_create(user_id=request.user.id)
+    orders = Order.objects.create(user_id=request.user.id)
+    order =  Order.objects.get(id=orders.id)
     order.total_product_cost = int(total)
     order.tax = 18
     order.save()
@@ -89,8 +89,8 @@ class Orderproducts(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['sub_total'] = Cart.objects.filter(user=self.request.user).aggregate(
-            total_product_cost__sum=Sum(('price')))['total_product_cost__sum']
+        context['sub_total'] = Order.objects.filter(user=self.request.user).aggregate(
+            total_product_cost__sum=Sum(('total_product_cost')))['total_product_cost__sum']
         context['tax'] =Cart.objects.filter(user=self.request.user).aggregate(
             total=Sum(F('price') *18/100))['total']
         if context['sub_total'] is not None:
@@ -122,3 +122,19 @@ class ListCartItem(ListView):
 @login_required
 def order_place(request):
     return HttpResponse("your order is placed")
+
+def wishlist(request,id):
+    wish_product = Product.objects.get(id = id)
+    obj,add_wish = Wishlist.objects.get_or_create(user = request.user,product = wish_product)
+    return redirect('all')
+
+def rm_wishlist(request,id):
+    wish_product = Product.objects.get(id = id)
+    wish_product.delete()
+    return redirect('wish')
+
+class Wishproducts(ListView):
+    model = Wishlist
+    template_name = "wish.html"
+
+
