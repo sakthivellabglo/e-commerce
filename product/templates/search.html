@@ -6,6 +6,7 @@
     </form>
 </center>
 <a href="{% url 'cart' %}"><img src="/images/images.png" style="width: 20px; margin-left: 1150px; position:absolute;"></a>
+<a href="{% url 'wish' %}"><img src="/images/heart.png" style="width: 20px; margin-left: 1200px; position:absolute;"></a>
 {% if user.is_authenticated %}
 <p style="margin-left: 1100px;position:absolute; margin-top: 2px;"><a href="{% url 'logout' %}"> Logout</a>
 <p></p>

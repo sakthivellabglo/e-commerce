@@ -11,11 +11,16 @@
                 price: Rs{{ i.price }}<br>
                 stock: {{ i.stock }}<br>
                 <br>
-                <a href="{% url 'add_to_cart' i.id %}"> <button>Add to Cart</button></a> 
+                <a href="{% url 'add_to_cart' i.id %}"> <button>Add to Cart</button></a><br>
+                <a href="{% url 'wishlist' i.id %}"> <button>Add to wishlist</button></a>
+                {% if i in alredy %}
+                <a href="{% url 'remove_wish' i.id %}"><img src="/images/heart.png" width="20px"></a>
+                {% else %}
+                <a href="{% url 'wishlist' i.id %}"><img src="https://image.pngaaa.com/267/2267-middle.png" width="20px"></a>
+                {% endif %}
+
         </div>
        </div> 
 </div>
 {% endfor %}
-
-
 {% endblock %}
