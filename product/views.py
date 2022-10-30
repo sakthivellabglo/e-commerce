@@ -15,8 +15,8 @@ class Allproducts(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         if self.request.user.is_authenticated: 
-            wish,list= Wishlist.objects.get_or_create(user=self.request.user)
-            #wish = Wishlist.objects.get(user=self.request.user)
+            wishlist= Wishlist.objects.get_or_create(user=self.request.user)
+            wish = Wishlist.objects.get(user=self.request.user)
             wishitems =wish.product.all()
             context['wishlist'] = list(wishitems)
             print(list(context['wishlist']))
