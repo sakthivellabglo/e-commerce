@@ -7,17 +7,26 @@ Order_choices = [
     ('failed', 'failed'),
 ]
 
-class Product(models.Model):
+
+class TimeStampBaseModel(models.Model):
+    created_on =  models.DateTimeField(auto_now_add=True ,null = True)
+    updated_on =  models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True 
+
+class Product(TimeStampBaseModel):
     title = models.CharField(max_length=40)
     image = models.ImageField(upload_to='images/')
     price = models.IntegerField()
     brand = models.CharField(max_length=40)
-    stock = models.BooleanField()
+    description = models.TextField(blank=True)
+    stock = models.BooleanField(default=True)
 
     def __str__(self):
         return " {} {} {} {} {} ".format(self.title, self.image, self.price, self.brand, self.stock)
 
-class Cart(models.Model):
+class Cart(TimeStampBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
@@ -29,7 +38,7 @@ class Cart(models.Model):
         return " {} {} {} {} {} ".format(self.user, self.product, self.quantity, self.price, self.date)
 
 
-class Order(models.Model):
+class Order(TimeStampBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(Cart)
     tax = models.FloatField(null=True)
@@ -43,7 +52,7 @@ class Order(models.Model):
     def __str__(self):
         return self.user.username
 
-class Wishlist(models.Model):
+class Wishlist(TimeStampBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ManyToManyField(Product)
 

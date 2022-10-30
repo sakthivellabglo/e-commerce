@@ -12,6 +12,8 @@
 </center>
 <center>
   {% for i in object_list %}
+  
+    
   <div>
     <center>
       <br>
@@ -22,7 +24,8 @@
       price:Rs {{ i.price }}<br>
       stock: {{ i.product.stock }}<br>
       ordered_date : {{i.date}}<br>
-      <form method="get" action="{% url 'add_quntity' i.product.id %}">
+      <form method="post" action="{% url 'add_quntity' i.product.id %}">
+        {% csrf_token %}
         Quantity<input type="number"  name="quantity" value="{{i.quantity}}"><button value="+"
           type="submit">Add</button>
 
@@ -39,4 +42,5 @@
   <br>
   total_price : {{ total_price }}
 </center>
+
 {% endblock content %}
