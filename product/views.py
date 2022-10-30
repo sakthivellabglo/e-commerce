@@ -1,16 +1,27 @@
+from urllib import request
 from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django .contrib import messages
 from product.models import Cart, Order, Product, Wishlist
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect,render
+from django.shortcuts import redirect, render
 from django.db.models import Sum, F
 
 
 class Allproducts(ListView):
     model = Product
     template_name = "allproducts.html"
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        if self.request.user.is_authenticated: 
+            wish,list= Wishlist.objects.get_or_create(user=self.request.user)
+            #wish = Wishlist.objects.get(user=self.request.user)
+            wishitems =wish.product.all()
+            context['wishlist'] = list(wishitems)
+            print(list(context['wishlist']))
+
+        return context
 
 
 class Searchresult(ListView):
@@ -45,13 +56,15 @@ def cart_remove(request, id):
     remove_item.delete()
     return redirect("cart")
 
+
 @login_required
 def order_remove(request, id):
     remove_item = Cart.objects.get(id=id)
     remove_item.delete()
     return redirect("order")
 
-@login_required
+
+
 def add_quntity(request, id):
     product = Product.objects.get(id=id)
     cart = Cart.objects.filter(product=product)
@@ -62,16 +75,15 @@ def add_quntity(request, id):
 
 @login_required
 def add_order(request):
-    cart = Cart.objects.filter(user=request.user)
-    total = Cart.objects.filter(Q(user=request.user) & Q(is_active=False)).aggregate(
-        price__sum=Sum(F('price') * F('quantity')))['price__sum']
-    cart.update(is_active=False)
-    orders = Order.objects.create(user_id=request.user.id)
-    order =  Order.objects.get(id=orders.id)
-    order.total_product_cost = int(total)
-    order.tax = 18
-    order.save()
-    order.items.add(*cart)
+    user = request.user
+    orders = Order.objects.create(user = request.user)
+    orders.tax =18
+    orders.total_product_cost = Cart.objects.filter(Q(user=request.user)& Q(is_active = True)).aggregate(
+            total=Sum(F('price')))['total']
+    orders.items.add(*Cart.objects.filter(Q(user = request.user) & Q(is_active = True)))
+    inactive  = Cart.objects.filter(user = request.user)
+    inactive.update(is_active = False)
+    orders.save()
     return redirect("order")
 
 
@@ -89,10 +101,10 @@ class Orderproducts(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['sub_total'] = Order.objects.filter(user=self.request.user).aggregate(
-            total_product_cost__sum=Sum(('total_product_cost')))['total_product_cost__sum']
-        context['tax'] =Cart.objects.filter(user=self.request.user).aggregate(
-            total=Sum(F('price') *18/100))['total']
+        context['sub_total'] =  Order.objects.filter(user = self.request.user).aggregate(Sum('total_product_cost'))['total_product_cost__sum']
+        print( context['sub_total'])
+        context['tax'] = Cart.objects.filter(user=self.request.user).aggregate(
+            total=Sum(F('price') * 18/100))['total']
         if context['sub_total'] is not None:
             context['total_price'] = context['sub_total'] + context['tax']
         return context
@@ -123,18 +135,25 @@ class ListCartItem(ListView):
 def order_place(request):
     return HttpResponse("your order is placed")
 
-def wishlist(request,id):
-    wish_product = Product.objects.get(id = id)
-    obj,add_wish = Wishlist.objects.get_or_create(user = request.user,product = wish_product)
+@login_required
+def wishlist(request, id):
+    wish_product = Product.objects.get(id=id)
+    obj, add_wish = Wishlist.objects.get_or_create(user=request.user)
+    obj.product.add(wish_product)
     return redirect('all')
 
-def rm_wishlist(request,id):
-    wish_product = Product.objects.get(id = id)
-    wish_product.delete()
-    return redirect('wish')
+
+def rm_wishlist(request, id):
+    wish_product = Product.objects.get(id=id)
+    obj = Wishlist.objects.get(user=request.user)
+    obj.product.remove(wish_product)
+    return redirect('all')
+
 
 class Wishproducts(ListView):
     model = Wishlist
     template_name = "wish.html"
-
+    def get_queryset(self):
+        object_list = Wishlist.objects.filter(user=self.request.user)
+        return object_list
 
