@@ -1,16 +1,18 @@
 {% extends "search.html" %}
 {% block content %}
 {% for i in object_list %}
+{% for j in i.product.all%}
 <center>
-    <h2> {{ i.product.title }} </h2>
-    <img src="{{ i.product.image.url }}" , width=150px><br>
-    Brand :{{ i.product.brand }}<br>
-    price :Rs{{ i.product.price }} <br>
-    <a href="{% url 'rm_wish' i.id %}"> <button>remove</button></a><br>
+    <h2> {{ j.title }} </h2>
+    <img src="{{ j.image.url }}" , width=150px><br>
+    Brand :{{ j.brand }}<br>
+    price :Rs{{ j.price }} <br>
+    <a href="{% url 'rm_wish' j.id %}"> <button>remove</button></a><br>
     <br>
     {% if request.user.is_authenticated %}
-    <a href="{% url 'add_to_cart' i.id %}"><button>add to cart</button></a><br>
+    <a href="{% url 'add_to_cart' j.id %}"><button>add to cart</button></a><br>
     {% endif %}
+    {% endfor %}
     {% endfor %}
     <a href="/all/"> back to home</a>
 </center>

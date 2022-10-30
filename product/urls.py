@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.contrib.auth.decorators import login_required
 
 from product import views
-urlpatterns = [path('all/', views.Allproducts.as_view(), name='all'),
+urlpatterns = [path('all/',views.Allproducts.as_view(), name='all'),
                path('search/', views.Searchresult.as_view(),
                     name='search_results'),
                path("accounts/", include("django.contrib.auth.urls")),
@@ -17,6 +17,6 @@ urlpatterns = [path('all/', views.Allproducts.as_view(), name='all'),
                path('order_remove/<int:id>/', views.order_remove, name='order_remove'),
                path("placeorder", views.order_place, name='order_place'),
                path("wishlist/<int:id>/",views.wishlist,name = 'wishlist'),
-               path("wishall", views.Wishproducts.as_view(), name='wish'),
+               path("wishall", login_required(views.Wishproducts.as_view()), name='wish'),
                 path("rm_wish/<int:id>/", views.rm_wishlist, name='rm_wish'),
                ]
