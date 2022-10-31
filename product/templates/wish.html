@@ -7,10 +7,16 @@
     <img src="{{ j.image.url }}" , width=150px><br>
     Brand :{{ j.brand }}<br>
     price :Rs{{ j.price }} <br>
-    <a href="{% url 'rm_wish' j.id %}"> <button>remove</button></a><br>
+    <form method="post" action="{% url 'rm_wish' i.id %}">
+        {% csrf_token %}
+<button>remove</button><br>
+</form>
     <br>
     {% if request.user.is_authenticated %}
-    <a href="{% url 'add_to_cart' j.id %}"><button>add to cart</button></a><br>
+    <form method="post" action="{% url 'add_to_cart' j.id %}">
+        {% csrf_token %}
+<button>Add to Cart</button><br>
+</form>
     {% endif %}
     {% endfor %}
     {% endfor %}
