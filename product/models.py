@@ -15,11 +15,17 @@ class TimeStampBaseModel(models.Model):
     class Meta:
         abstract = True 
 
+class Brand(models.Model):
+    name = models.CharField(max_length=40)
+    logo = models.ImageField()
+    def __str__(self):
+        return " {} ".format(self.name)
+
 class Product(TimeStampBaseModel):
     title = models.CharField(max_length=40)
     image = models.ImageField(upload_to='images/')
     price = models.IntegerField()
-    brand = models.CharField(max_length=40)
+    brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
     description = models.TextField(blank=True)
     stock = models.BooleanField(default=True)
 
@@ -30,7 +36,7 @@ class Cart(TimeStampBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    price = models.FloatField(blank=True)
+    price = models.FloatField()
     date = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -41,8 +47,8 @@ class Cart(TimeStampBaseModel):
 class Order(TimeStampBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(Cart)
-    tax = models.FloatField(null=True)
-    total_product_cost = models.PositiveIntegerField(null=True)
+    tax = models.FloatField()
+    total_product_cost = models.PositiveIntegerField()
     order_status = models.CharField(
         max_length=15,
         choices=Order_choices,

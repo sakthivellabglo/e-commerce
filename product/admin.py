@@ -1,5 +1,5 @@
 from django.contrib import admin
-from product.models import Cart, Product, Order, Wishlist
+from product.models import Brand, Cart, Product, Order, Wishlist
 
 class display_product(admin.ModelAdmin):
     list_display = ('title', 'image', 'price', 'brand', 'stock')
@@ -11,3 +11,4 @@ admin.site.register(Product, display_product)
 admin.site.register(Cart)
 admin.site.register(Order)
 admin.site.register(Wishlist)
+admin.site.register(Brand)

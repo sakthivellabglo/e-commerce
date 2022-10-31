@@ -4,9 +4,10 @@ from django.views.generic.list import ListView
 from django .contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from django.db.models import Sum, F,Q
+from django.db.models import Sum, F, Q
 
 from product.models import Cart, Order, Product, Wishlist
+
 
 class Allproducts(ListView):
     model = Product
@@ -14,11 +15,10 @@ class Allproducts(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        if self.request.user.is_authenticated: 
-            wish,list= Wishlist.objects.get_or_create(user=self.request.user)
-            wishitems =wish.product.all()
+        if self.request.user.is_authenticated:
+            wish, list = Wishlist.objects.get_or_create(user=self.request.user)
+            wishitems = wish.product.all()
             context['wishlist'] = (wishitems)
-            print((context['wishlist']))
 
         return context
 
@@ -42,11 +42,11 @@ class Searchresult(ListView):
 def Add_to_cart(request, Product_id):
     if request.method == "POST":
         product = Product.objects.get(id=Product_id)
-        cart, create = Cart.objects.get_or_create(
+        cart = Cart.objects.create(
             product=product,
             user=request.user,
             price=product.price,
-            )
+        )
     return redirect("all")
 
 
@@ -59,15 +59,14 @@ def cart_remove(request, Cart_id):
 
 @login_required
 def order_remove(request, Cart_id):
-    remove_item = Cart.objects.get(id=Cart_id)
-    remove_item.delete()
+    if request.method == "POST":
+        remove_item = Order.objects.get(id=Cart_id)
+        remove_item.delete()
     return redirect("order")
-
 
 
 def add_quntity(request, product_id):
     if request.method == "POST":
-        print("dvdfsbdbgdb dfghnsfdtg fgjftghftht")
         product = Product.objects.get(id=product_id)
         cart = Cart.objects.filter(product=product)
         qunt = request.POST.get('quantity')
@@ -80,16 +79,18 @@ def add_quntity(request, product_id):
 
 @login_required
 def add_order(request):
-        user = request.user
-        orders = Order.objects.create(user = request.user)
-        orders.tax =18
-        orders.total_product_cost = Cart.objects.filter(Q(user=request.user)& Q(is_active = True)).aggregate(
-                total=Sum(F('price')*F('quantity')))['total']
-        orders.items.add(*Cart.objects.filter(Q(user = request.user) & Q(is_active = True)))
-        inactive  = Cart.objects.filter(user = request.user)
-        inactive.update(is_active = False)
-        orders.save()
-        return redirect("order")
+    user = request.user
+    taxs = 18
+    total_product_price = Cart.objects.filter(Q(user=request.user) & Q(is_active=True)).aggregate(
+        total=Sum(F('price')*F('quantity')))['total']
+    orders = Order.objects.create(
+        user=request.user, tax=taxs, total_product_cost=total_product_price)
+    orders.items.add(
+        *Cart.objects.filter(Q(user=request.user) & Q(is_active=True)))
+    inactive = Cart.objects.filter(user=request.user)
+    inactive.update(is_active=False)
+    orders.save()
+    return redirect("order")
 
 
 class Orderproducts(ListView):
@@ -106,10 +107,10 @@ class Orderproducts(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['sub_total'] =  Order.objects.filter(user = self.request.user).aggregate(Sum('total_product_cost'))['total_product_cost__sum']
-        print( context['sub_total'])
-        context['tax'] = Cart.objects.filter(user=self.request.user).aggregate(
-            total=Sum(F('price') * 18/100))['total']
+        context['sub_total'] = Order.objects.filter(user=self.request.user).aggregate(
+            Sum('total_product_cost'))['total_product_cost__sum']
+        context['tax'] = Order.objects.filter(user=self.request.user).aggregate(
+            total=Sum(F('total_product_cost') * 18/100))['total']
         if context['sub_total'] is not None:
             context['total_price'] = context['sub_total'] + context['tax']
         return context
@@ -131,8 +132,8 @@ class ListCartItem(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        print(context)
-        context['total_price'] = self.get_queryset().aggregate(Sum('price'))['price__sum']
+        context['total_price'] = self.get_queryset().aggregate(Sum('price'))[
+            'price__sum']
         return context
 
 
@@ -140,25 +141,28 @@ class ListCartItem(ListView):
 def order_place(request):
     return HttpResponse("your order is placed")
 
+
 @login_required
 def add_wishlist(request, Product_id):
-    wish_product = Product.objects.get(id=Product_id)
-    obj, add_wish = Wishlist.objects.get_or_create(user=request.user)
-    obj.product.add(wish_product)
+    if request.method == "POST":
+        wish_product = Product.objects.get(id=Product_id)
+        obj, add_wish = Wishlist.objects.get_or_create(user=request.user)
+        obj.product.add(wish_product)
     return redirect('all')
 
 
 def rm_wishlist(request, Product_id):
-    wish_product = Product.objects.get(id=Product_id)
-    obj = Wishlist.objects.get(user=request.user)
-    obj.product.remove(wish_product)
+    if request.method == "POST":
+        wish_product = Product.objects.get(id=Product_id)
+        obj = Wishlist.objects.get(user=request.user)
+        obj.product.remove(wish_product)
     return redirect('all')
 
 
 class Wishproducts(ListView):
     model = Wishlist
     template_name = "wish.html"
+
     def get_queryset(self):
         object_list = Wishlist.objects.filter(user=self.request.user)
         return object_list
-

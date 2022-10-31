@@ -17,9 +17,10 @@
     Brand :{{ i.brand }}<br>
     price :Rs{{ i.price }} <br>
     stock: {{ i.stock }}<br>
-    {% if request.user.is_authenticated %}
-    <a href="{% url 'add_to_cart' i.id %}">[Add to Cart]</a><br>
-    {% endif %}
+    <form method="post" action="{% url 'add_to_cart' i.id %}">
+        {% csrf_token %}
+<button>Add to Cart</button><br>
+</form>
     {% endfor %}
     <a href="/all/"> back to home</a>
 </center>

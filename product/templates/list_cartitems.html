@@ -1,10 +1,17 @@
 {% extends 'search.html' %}
 
 {% block content %}
+<style>
+  .addcartimg:hover{
+    transform: scale(1.2);
+    transition: 1s;
+  }
+  </style>
+  
 {% if messages %}
 {% for message in messages %}
 <center>
-  <div >
+  <div>
     {{ message }}
   </div>
   {% endfor %}
@@ -12,33 +19,37 @@
 </center>
 <center>
   {% for i in object_list %}
-  
-    
+
+
   <div>
     <center>
       <br>
       <h3>{{ i.product.title }}</h3>
 
-      <img src="{{ i.product.image.url }}" , width=150px><br>
+      <img class="addcartimg" src="{{ i.product.image.url }}" , width=140px><br><br>
       Brand : {{ i.product.brand }}<br>
       price:Rs {{ i.price }}<br>
       stock: {{ i.product.stock }}<br>
       ordered_date : {{i.date}}<br>
       <form method="post" action="{% url 'add_quntity' i.product.id %}">
         {% csrf_token %}
-        Quantity<input type="number"  name="quantity" value="{{i.quantity}}"><button value="+"
-          type="submit">Add</button>
+        Quantity<input type="number" name="quantity" value="{{i.quantity}}"><button type="submit">Add</button>
 
       </form>
-      <a href="{% url 'cart_remove' i.id %}"><button>remove</button></a><br>
-
+      <form method="post" action="{% url 'cart_remove' i.id %}">
+        {% csrf_token %}
+        <button>remove</button><br>
+      </form>
 
 
     </center>
   </div>
   {% endfor %}
   <br>
-  <a href="{% url 'add_to_order' %}"><button>order now</button></a><br>
+  <form method="post" action="{% url 'add_to_order' %}">
+    {% csrf_token %}
+    <button>order now</button><br>
+  </form>
   <br>
   total_price : {{ total_price }}
 </center>

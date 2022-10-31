@@ -1,12 +1,18 @@
 {% extends "search.html" %}
 
 {% block content %}
+<style>
+        .addcartbutton:hover{
+               transform: scale(1.2);
+                
+        }
+</style>
 {% for i in object_list %}
 
 <div style="margin-left: 41% ;">
                 <h2> {{ i.title }}</h2>
                 <div style="display:flex ;">
-                <img src="{{ i.image.url }}" , width=150px><br>
+                <img src="{{ i.image.url }}" , width=200px height="250px"><br>
                 <div style="margin-left:50px ;margin-top: 15%;">
                 Brand : {{ i.brand }}<br>
                 price: Rs{{ i.price }}<br>
@@ -14,18 +20,25 @@
                 <br>
                 <form method="post" action="{% url 'add_to_cart' i.id %}">
                         {% csrf_token %}
-                <a href="{% url 'add_to_cart' i.id %}"> <button>Add to Cart</button></a><br>
+                <button class="addcartbutton" style=" height: 30px; border-radius: 5px; background-color: dimgray; color: white;">Add to Cart</button><br>
+                </form>
                 {% if i in wishlist %}
                 <br>
-                <a href="{% url 'rm_wish' i.id %}"><img src="/images/heart.png" width="20px"></a>
+                <form method="post" action="{% url 'rm_wish' i.id %}">
+                        {% csrf_token %}
+                <button style="margin-left:100%;margin-top: -65%;"><img src="/images/heart.png" width="20px"></button><br>
+                </form>
                 {% else %}
                 <br>
-                <a href="{% url 'wishlist' i.id %}"><img src="https://image.pngaaa.com/267/2267-middle.png" width="20px"></a>
+                <form method="post" action="{% url 'wishlist' i.id %}">
+                        {% csrf_token %}
+                <button style="margin-left:100%;margin-top: -65%;"><img src="https://image.pngaaa.com/267/2267-middle.png" width="20px"></button><br>
+                </form>
                 {% endif %}
        
         </div>
        </div> 
 </div>
-</form>
+
 {% endfor %}
 {% endblock %}
