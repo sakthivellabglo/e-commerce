@@ -19,8 +19,8 @@
     stock: {{ i.stock }}<br>
     <form method="post" action="{% url 'add_to_cart' i.id %}">
         {% csrf_token %}
-<button>Add to Cart</button><br>
-</form>
+        <button>Add to Cart</button><br>
+    </form>
     {% endfor %}
     <a href="/all/"> back to home</a>
 </center>

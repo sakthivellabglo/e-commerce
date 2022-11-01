@@ -15,17 +15,18 @@
                 tax : {{j.tax}}% <br>
                 order_status : {{j.order_status}}<br>
                 <br>
+                <center>
+                        <form method="post" action="{% url 'order_remove' i.id j.id %}">
+                                {% csrf_token %}
+                                <button>remove</button><br>
+                        </form>
+                </center>
 
         </center>
 
 </div>
 {% endfor %}
-<center>
-        <form method="post" action="{% url 'order_remove' j.id %}">
-                {% csrf_token %}
-                <button>remove</button><br>
-        </form>
-</center>
+
 {% endfor %}
 <br>
 <center>
