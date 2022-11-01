@@ -1,17 +1,22 @@
 <style>
-.addcart:hover{
-    transform: scale(1.5);
-}
+    .addcart:hover {
+        transform: scale(1.5);
+    }
 </style>
 <center>
-    <h1> <a href="/all/" style="color:black ; text-decoration: none;" >SAKTHI MOBILES</a></h1>
+    <h1> <a href="{% url 'all' %}" style="color:black ; text-decoration: none;">SAKTHI MOBILES</a></h1>
+</center>
+<a href="{% url 'all' %}"><img src="/images/home.jpg" class="addcart"style="width: 30px; margin-left:10px position:relative;"></a>
+<center>
     <form action="{% url 'search_results' %}" method="get">
         <input name="product_name" type="text" placeholder="product name...">
         <button type="submit">search</button>
     </form>
 </center>
-<a href="{% url 'cart' %}"><img src="/images/images.png" class="addcart" style="width: 20px; margin-left: 1150px; position:absolute;"></a>
-<a href="{% url 'wish' %}"><img src="/images/heart.png" class="addcart" style="width: 20px; margin-left: 1200px; position:absolute;"></a>
+<a href="{% url 'cart' %}"><img src="/images/images.png" class="addcart"
+        style="width: 20px; margin-left: 1150px; position:absolute;"></a>
+<a href="{% url 'wish' %}"><img src="/images/heart.png" class="addcart"
+        style="width: 20px; margin-left: 1200px; position:absolute;"></a>
 {% if user.is_authenticated %}
 <p style="margin-left: 1100px;position:absolute; margin-top: 2px;"><a href="{% url 'logout' %}"> Logout</a>
 <p></p>

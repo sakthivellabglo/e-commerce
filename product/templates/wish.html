@@ -9,14 +9,14 @@
     price :Rs{{ j.price }} <br>
     <form method="post" action="{% url 'rm_wish' i.id %}">
         {% csrf_token %}
-<button>remove</button><br>
-</form>
+        <button>remove</button><br>
+    </form>
     <br>
     {% if request.user.is_authenticated %}
     <form method="post" action="{% url 'add_to_cart' j.id %}">
         {% csrf_token %}
-<button>Add to Cart</button><br>
-</form>
+        <button>Add to Cart</button><br>
+    </form>
     {% endif %}
     {% endfor %}
     {% endfor %}
