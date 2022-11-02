@@ -57,7 +57,7 @@ class Order(TimeStampBaseModel):
     total_product_cost = models.PositiveIntegerField()
     order_status = models.IntegerField(
         choices=Order_choices,
-        default=2
+        default=PENDING
     )
 
     def __str__(self):

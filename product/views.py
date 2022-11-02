@@ -2,12 +2,10 @@ from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django .contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.db.models import Sum, F, Q
-from django.utils.decorators import method_decorator
 
 from product.models import Cart, Order, Product, Wishlist
-from product.models import SUCCESS, PENDING, FAILED
 
 
 class Allproducts(ListView):
@@ -61,14 +59,15 @@ def cart_remove(request, Cart_id):
 def order_remove(request, Cart_id, order_id):
     if request.method == "POST":
         remove_item = Cart.objects.get(id=Cart_id)
+        qunt = remove_item.quantity
         remove_price = Order.objects.get(id=order_id)
         remove_item.delete()
-        total_product_cost = remove_price.items.values(
-            'price').aggregate(Sum('price'))['price__sum']
+        total_product_cost = remove_price.items.values().aggregate(price__sum=Sum(F('price')*F('quantity')))['price__sum']
         if total_product_cost is None:
             print("dvsdvsdv  dvdsfds ")
             remove_price.delete()
         else:
+            print(remove_item.quantity)
             remove_price.total_product_cost = total_product_cost
             remove_price.save()
     return redirect("order")
@@ -77,7 +76,7 @@ def order_remove(request, Cart_id, order_id):
 def add_quntity(request, product_id):
     if request.method == "POST":
         product = Product.objects.get(id=product_id)
-        cart = Cart.objects.filter(product=product)
+        cart = Cart.objects.filter(product=product ,user = request.user)
         qunt = request.POST.get('quantity')
         cart.update(quantity=qunt)
         return redirect("cart")
@@ -128,8 +127,7 @@ class ListCartItem(ListView):
     template_name = 'list_cartitems.html'
 
     def get_queryset(self):
-        object_list = Cart.objects.filter(
-            (Q(user=self.request.user) & Q(is_active=True)))
+        object_list = Cart.objects.filter((Q(user=self.request.user) & Q(is_active=True)))
         if object_list.exists():
             pass
         else:
@@ -138,15 +136,12 @@ class ListCartItem(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['total_price'] = self.get_queryset().aggregate(Sum('price'))[
-            'price__sum']
+        context['total_price'] = self.get_queryset().aggregate(Sum('price'))['price__sum']
         return context
-
 
 @login_required
 def order_place(request):
     return HttpResponse("your order is placed")
-
 
 @login_required
 def add_wishlist(request, Product_id):
@@ -156,14 +151,12 @@ def add_wishlist(request, Product_id):
         obj.product.add(wish_product)
     return redirect('all')
 
-
 def rm_wishlist(request, Product_id):
     if request.method == "POST":
         wish_product = Product.objects.get(id=Product_id)
         obj = Wishlist.objects.get(user=request.user)
         obj.product.remove(wish_product)
     return redirect('all')
-
 
 class Wishproducts(ListView):
     model = Wishlist

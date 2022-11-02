@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from re import T
+from tkinter.tix import Tree
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'product',
+    
 ]
 
 MIDDLEWARE = [
@@ -70,6 +75,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'e_commerce.wsgi.application'
 
+GRAPPELLI_ADMIN_TITLE ='E-Commerce'
+
+GRAPPELLI_SWITCH_USER_ORIGINAL = False
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -119,6 +127,9 @@ LOGIN_REDIRECT_URL = '/all/'
 
 LOGOUT_REDIRECT_URL = "/all/"
 
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATIC_URL = '/static/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
