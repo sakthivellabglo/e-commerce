@@ -61,24 +61,23 @@ def order_remove(request, Cart_id, order_id):
         remove_item = Cart.objects.get(id=Cart_id)
         qunt = remove_item.quantity
         remove_price = Order.objects.get(id=order_id)
-        remove_item.delete()
+        remove_price.items.remove(remove_item)
         total_product_cost = remove_price.items.values().aggregate(price__sum=Sum(F('price')*F('quantity')))['price__sum']
         if total_product_cost is None:
-            print("dvsdvsdv  dvdsfds ")
             remove_price.delete()
         else:
-            print(remove_item.quantity)
             remove_price.total_product_cost = total_product_cost
             remove_price.save()
+    else:
+        return redirect("order")
     return redirect("order")
 
 
 def add_quntity(request, product_id):
     if request.method == "POST":
-        product = Product.objects.get(id=product_id)
-        cart = Cart.objects.filter(product=product ,user = request.user)
+        product = Cart.objects.filter(id=product_id)
         qunt = request.POST.get('quantity')
-        cart.update(quantity=qunt)
+        product.update(quantity=qunt)
         return redirect("cart")
     else:
         pass
@@ -136,7 +135,7 @@ class ListCartItem(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['total_price'] = self.get_queryset().aggregate(Sum('price'))['price__sum']
+        context['total_price'] = self.get_queryset().aggregate(price__sum=Sum(F('price')*F('quantity')))['price__sum']
         return context
 
 @login_required
