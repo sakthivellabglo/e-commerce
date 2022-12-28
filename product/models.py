@@ -4,9 +4,9 @@ FAILED = 0
 SUCCESS = 1
 PENDING = 2
 Order_choices = [
-    ('PENDING', 'PENDING'),
-    ('SUCCESS', 'sucess'),
-    ('FAILED', 'failed'),
+    (PENDING, 'PENDING'),
+    (SUCCESS, 'sucess'),
+    (FAILED, 'failed'),
 ]
 
 
